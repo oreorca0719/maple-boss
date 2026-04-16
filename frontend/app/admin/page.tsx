@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  getMe, listPendingUsers, approveUser, deleteUser,
+  getMe, listUsers, listPendingUsers, approveUser, deleteUser,
   type User,
 } from "@/lib/api";
 
