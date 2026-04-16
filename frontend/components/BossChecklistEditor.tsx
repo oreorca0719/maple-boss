@@ -20,6 +20,30 @@ function formatMeso(n: number) {
   return n.toLocaleString("ko-KR");
 }
 
+function isCrossMonthWeek(weeklyKey: string): boolean {
+  // YYYY-Www 형식에서 목요일과 수요일이 다른 달인지 확인 (ISO 8601)
+  const year = parseInt(weeklyKey.split("-W")[0]);
+  const week = parseInt(weeklyKey.split("-W")[1]);
+
+  const jan4 = new Date(year, 0, 4);
+  // isoweekday: 1=Mon, ..., 7=Sun (Python) vs getDay: 0=Sun, ..., 6=Sat (JS)
+  // JS: (getDay() + 6) % 7 || 7 converts to isoweekday
+  const isoDay = (jan4.getDay() === 0 ? 7 : jan4.getDay());
+  const daysToMonday = isoDay - 1; // Distance from Jan 4 to the Monday of its week
+
+  const week1Monday = new Date(year, 0, 4 - daysToMonday);
+  const targetMonday = new Date(week1Monday);
+  targetMonday.setDate(week1Monday.getDate() + (week - 1) * 7);
+
+  const thursday = new Date(targetMonday);
+  thursday.setDate(targetMonday.getDate() + 3);
+
+  const wednesday = new Date(targetMonday);
+  wednesday.setDate(targetMonday.getDate() + 5);
+
+  return thursday.getMonth() !== wednesday.getMonth();
+}
+
 const DIFFICULTY_ORDER = ["이지", "노말", "하드", "카오스", "익스트림"];
 
 export default function BossChecklistEditor({
@@ -317,8 +341,9 @@ export default function BossChecklistEditor({
                 const earning = sel ? formatMeso(Math.floor(sel.crystal_price / sel.party_size)) : null;
                 const isMonthlyCleared = clearedMonthlyThisMonth.has(bossName);
                 const isSameWeek = weeklyKey === initialWeeklyKey;
-                // 같은 주차가 아니고, 이미 체크했으면 disabled
-                const isMonthlyDisabled = isMonthlyCleared && !isSameWeek;
+                const isCrossMonth = isCrossMonthWeek(weeklyKey);
+                // 같은 주차가 아니고, 달 경계 주도 아니고, 이미 체크했으면 disabled
+                const isMonthlyDisabled = isMonthlyCleared && !isSameWeek && !isCrossMonth;
                 const diffButtons = variants.map((v) => {
                   const isSelected = sel?.difficulty === v.difficulty;
                   const isDisabled = isMonthlyDisabled && !isSelected;

@@ -58,11 +58,21 @@ class CharacterService:
     # 보스 체크리스트
     # ------------------------------------------------------------------
 
+    def _is_cross_month_week(self, weekly_key: str) -> bool:
+        """주가 달을 걸치는지 확인 (목요일과 수요일이 다른 달)"""
+        thu = self._weekly_key_to_thursday(weekly_key)
+        wed = date_type.fromordinal(thu.toordinal() + 6)  # Thursday + 6 days = Wednesday
+        return (thu.year, thu.month) != (wed.year, wed.month)
+
     def _get_monthly_bosses_cleared_this_month(self, user_id: str, weekly_key: str) -> set[str]:
-        """같은 달의 다른 주에서 이미 클리어된 월간 보스 반환"""
+        """같은 달의 다른 주에서 이미 클리어된 월간 보스 반환 (달 경계 주 제외)"""
         # 현재 주의 월 정보 계산
         thu = self._weekly_key_to_thursday(weekly_key)
         current_ym = (thu.year, thu.month)
+
+        # 달 경계 주이면 중복 방지 미적용 (새로운 달에 다시 선택 가능하도록)
+        if self._is_cross_month_week(weekly_key):
+            return set()
 
         # 같은 달의 모든 체크리스트 조회
         items = self._db.query_by_pk(
@@ -76,8 +86,8 @@ class CharacterService:
             try:
                 wk = item.get("weekly_key", "")
                 wk_thu = self._weekly_key_to_thursday(wk)
-                # 같은 달인지 확인
-                if (wk_thu.year, wk_thu.month) == current_ym:
+                # 같은 달인지 확인 (달 경계 주가 아닌 경우만 카운트)
+                if (wk_thu.year, wk_thu.month) == current_ym and not self._is_cross_month_week(wk):
                     bosses = item.get("bosses", [])
                     for boss in bosses:
                         # 월간 보스이고 클리어된 것만 수집
