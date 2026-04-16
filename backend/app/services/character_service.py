@@ -91,18 +91,16 @@ class CharacterService:
     def save_checklist(self, checklist: BossChecklist) -> tuple[BossChecklist, int, int]:
         """
         체크리스트 저장.
+        월간 보스는 같은 달에 1회만 적립 (이미 클리어된 월간 보스는 is_cleared=False로 변경).
+        월간 보스가 적립된 주의 주간 수익에 포함됨.
         저장 후 이번 주 전체 캐릭터 합산으로 weekly/monthly를 재계산(SET).
-        가산(+=) 방식을 쓰지 않으므로 몇 번 저장해도 수치가 불어나지 않음.
-        월간 보스는 한 달에 1회만 반영됨 (중복 저장 방지).
         반환: (저장된 체크리스트, 이번주 합계, 이번달 합계)
         """
-        # 0. 월간 보스 중복 제거 (같은 달에 이미 클리어된 월간 보스 제외)
+        # 0. 월간 보스 중복 제거 (같은 달에 이미 클리어된 월간 보스는 is_cleared=False로 변경)
         cleared_monthly = self._get_monthly_bosses_cleared_this_month(checklist.user_id, checklist.weekly_key)
-        filtered_bosses = [
-            boss for boss in checklist.bosses
-            if not (boss.is_monthly and boss.boss_name in cleared_monthly)
-        ]
-        checklist.bosses = filtered_bosses
+        for boss in checklist.bosses:
+            if boss.is_monthly and boss.boss_name in cleared_monthly:
+                boss.is_cleared = False
 
         # 1. 체크리스트 저장 (덮어쓰기)
         self._db.put_item(checklist.model_dump())

@@ -28,6 +28,7 @@ export default function BossChecklistEditor({
   // key: boss_name, value: 선택된 BossEntry
   const [selected, setSelected] = useState<Record<string, BossEntry>>({});
   const [saving, setSaving] = useState(false);
+  const [initialWeeklyKey, setInitialWeeklyKey] = useState<string>(weeklyKey);
   const [clearedMonthlyThisMonth, setClearedMonthlyThisMonth] = useState<Set<string>>(new Set());
 
   const { groupedWeekly, groupedMonthly } = useMemo(() => {
@@ -49,21 +50,23 @@ export default function BossChecklistEditor({
 
   useEffect(() => {
     if (!initial) {
+      setInitialWeeklyKey(weeklyKey);
       setClearedMonthlyThisMonth(new Set());
       return;
     }
+    setInitialWeeklyKey(initial.weekly_key);
     const map: Record<string, BossEntry> = {};
     const clearedMonthly = new Set<string>();
     for (const b of initial.bosses) {
       map[b.boss_name] = b;
-      // 월간 보스이고 클리어된 것을 추적
+      // 월간 보스이고 클리어된 것을 추적 (현재 주차에서)
       if (b.is_monthly && b.is_cleared) {
         clearedMonthly.add(b.boss_name);
       }
     }
     setSelected(map);
     setClearedMonthlyThisMonth(clearedMonthly);
-  }, [initial]);
+  }, [initial, weeklyKey]);
 
   // bossList에서 월간 보스 판단 (is_monthly 필드)
   const monthlyBossNames = new Set(bossList.filter((b) => b.is_monthly).map((b) => b.name));
@@ -313,9 +316,12 @@ export default function BossChecklistEditor({
                 const sel = selected[bossName];
                 const earning = sel ? formatMeso(Math.floor(sel.crystal_price / sel.party_size)) : null;
                 const isMonthlyCleared = clearedMonthlyThisMonth.has(bossName);
+                const isSameWeek = weeklyKey === initialWeeklyKey;
+                // 같은 주차가 아니고, 이미 체크했으면 disabled
+                const isMonthlyDisabled = isMonthlyCleared && !isSameWeek;
                 const diffButtons = variants.map((v) => {
                   const isSelected = sel?.difficulty === v.difficulty;
-                  const isDisabled = isMonthlyCleared && !isSelected;
+                  const isDisabled = isMonthlyDisabled && !isSelected;
                   return (
                     <button
                       key={v.id}
