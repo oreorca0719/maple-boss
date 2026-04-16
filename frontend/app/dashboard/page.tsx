@@ -10,7 +10,7 @@ import {
 import { removeToken } from "@/lib/api";
 import CharacterCard from "@/components/CharacterCard";
 import EarningsChart from "@/components/EarningsChart";
-import EarningsLeaderboard from "@/components/EarningsLeaderboard";
+import { RankTable } from "@/components/EarningsLeaderboard";
 import PartyParticipationRanking from "@/components/PartyParticipationRanking";
 
 function getCurrentWeekKey(): string {
@@ -210,7 +210,24 @@ export default function DashboardPage() {
           <h2 className="font-semibold mb-3">순위</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 h-96">
             <div className="overflow-y-auto">
-              <EarningsLeaderboard users={allUsers} currentUserId={user.user_id} />
+              <RankTable
+                title="🏆 주간 수익 순위"
+                sorted={[...allUsers]
+                  .filter((u) => u.weekly_earnings > 0)
+                  .sort((a, b) => b.weekly_earnings - a.weekly_earnings)}
+                valueKey="weekly_earnings"
+                currentUserId={user.user_id}
+              />
+            </div>
+            <div className="overflow-y-auto">
+              <RankTable
+                title="📅 월간 수익 순위"
+                sorted={[...allUsers]
+                  .filter((u) => u.monthly_earnings > 0)
+                  .sort((a, b) => b.monthly_earnings - a.monthly_earnings)}
+                valueKey="monthly_earnings"
+                currentUserId={user.user_id}
+              />
             </div>
             <div className="overflow-y-auto">
               <PartyParticipationRanking

@@ -104,7 +104,8 @@
       "mcp__filesystem__write_file",
       "Bash(xargs grep:*)",
       "Bash(python scripts/set_admin.py 쿄큐렌)",
-      "Bash(PYTHONPATH=. python scripts/set_admin.py 쿄큐렌)"
+      "Bash(PYTHONPATH=. python scripts/set_admin.py 쿄큐렌)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp"
     ]
   }
 }

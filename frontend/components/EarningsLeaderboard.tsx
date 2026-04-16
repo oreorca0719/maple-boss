@@ -7,7 +7,7 @@ interface Props {
   currentUserId: string;
 }
 
-function RankTable({
+export function RankTable({
   title,
   sorted,
   valueKey,
