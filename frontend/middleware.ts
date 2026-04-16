@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/signup"];
 
 function buildRedirectUrl(path: string, request: NextRequest): URL {
   // nginx 역방향 프록시 뒤에서 실행되므로 X-Forwarded-* 헤더로 실제 외부 URL을 재구성
