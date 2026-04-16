@@ -105,7 +105,9 @@
       "Bash(xargs grep:*)",
       "Bash(python scripts/set_admin.py 쿄큐렌)",
       "Bash(PYTHONPATH=. python scripts/set_admin.py 쿄큐렌)",
-      "mcp__Claude_in_Chrome__tabs_context_mcp"
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 1584 /F)"
     ]
   }
 }
