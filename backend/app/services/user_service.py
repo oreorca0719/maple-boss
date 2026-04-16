@@ -13,6 +13,7 @@ class UserService:
         """
         유저 생성 + 본캐를 CHAR# 레코드로 자동 등록.
         user_id = 본캐 닉네임이므로 동일 이름으로 캐릭터도 생성.
+        신규 가입은 is_approved=False (관리자 승인 대기)
         """
         from app.models.character import Character
 
@@ -21,6 +22,7 @@ class UserService:
             user_id=payload.user_id,
             display_name=payload.display_name,
             password_hash=payload.password_hash,
+            is_approved=False,  # 가입 승인 대기
             created_at=now,
             updated_at=now,
         )

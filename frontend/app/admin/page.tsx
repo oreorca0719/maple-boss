@@ -11,6 +11,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
@@ -23,8 +24,12 @@ export default function AdminPage() {
           return;
         }
         setUser(me);
-        const pending = await listPendingUsers();
+        const [pending, all] = await Promise.all([
+          listPendingUsers(),
+          listUsers(),
+        ]);
         setPendingUsers(pending);
+        setAllUsers(all);
       } catch {
         router.push("/login");
       } finally {
@@ -59,11 +64,12 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (userId: string) => {
-    if (!confirm(`"${userId}"을(를) 삭제하시겠습니까?`)) return;
+    if (!confirm(`"${userId}"을(를) 삭제하시겠습니까? (복구 불가)`)) return;
     setActionInProgress(userId);
     try {
       await deleteUser(userId);
       setPendingUsers((prev) => prev.filter((u) => u.user_id !== userId));
+      setAllUsers((prev) => prev.filter((u) => u.user_id !== userId));
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "삭제 실패");
     } finally {
@@ -141,12 +147,63 @@ export default function AdminPage() {
           )}
         </section>
 
-        {/* 회원 관리 */}
+        {/* 전체 회원 목록 */}
         <section>
-          <h2 className="font-semibold mb-3 text-maple-text">회원 관리</h2>
-          <p className="text-maple-muted text-sm mb-3">
-            필요시 회원을 삭제할 수 있습니다. 삭제 후 복구는 불가능합니다.
-          </p>
+          <h2 className="font-semibold mb-3 text-maple-text">
+            전체 회원 ({allUsers.length}명)
+          </h2>
+          {allUsers.length === 0 ? (
+            <p className="text-maple-muted text-sm">회원이 없습니다.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-maple-border text-maple-muted">
+                    <th className="text-left py-2 px-3">닉네임</th>
+                    <th className="text-left py-2 px-3">상태</th>
+                    <th className="text-left py-2 px-3">가입일</th>
+                    <th className="text-right py-2 px-3">작업</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allUsers.map((u) => (
+                    <tr
+                      key={u.user_id}
+                      className="border-b border-maple-border hover:bg-maple-darker"
+                    >
+                      <td className="py-2 px-3 text-maple-text font-medium">
+                        {u.user_id}
+                        {u.is_admin && (
+                          <span className="ml-2 text-xs bg-maple-yellow text-maple-dark px-2 py-0.5 rounded">
+                            관리자
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2 px-3">
+                        {u.is_approved ? (
+                          <span className="text-maple-green text-xs">✓ 승인</span>
+                        ) : (
+                          <span className="text-maple-muted text-xs">대기</span>
+                        )}
+                      </td>
+                      <td className="py-2 px-3 text-maple-muted text-xs">
+                        {new Date(u.created_at).toLocaleDateString("ko-KR")}
+                      </td>
+                      <td className="py-2 px-3 text-right">
+                        <button
+                          onClick={() => handleDelete(u.user_id)}
+                          disabled={actionInProgress === u.user_id}
+                          className="text-maple-red text-sm hover:underline disabled:opacity-50"
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </main>
     </div>

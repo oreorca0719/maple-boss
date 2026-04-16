@@ -70,6 +70,8 @@ def login(
     user = svc.get_full(form.username)
     if not user or not verify_password(form.password, user.password_hash):
         raise HTTPException(status_code=401, detail="닉네임 또는 비밀번호가 올바르지 않습니다.")
+    if not user.is_approved:
+        raise HTTPException(status_code=403, detail="관리자 승인 대기 중입니다.")
     return Token(access_token=create_access_token(user.user_id))
 
 
