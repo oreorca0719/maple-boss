@@ -10,7 +10,6 @@ import {
 import { removeToken } from "@/lib/api";
 import CharacterCard from "@/components/CharacterCard";
 import EarningsChart from "@/components/EarningsChart";
-import EarningsLeaderboard from "@/components/EarningsLeaderboard";
 import PartyParticipationRanking from "@/components/PartyParticipationRanking";
 
 function getCurrentWeekKey(): string {
@@ -197,21 +196,14 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* 수익 순위표 + 파티 참여 순위 */}
+        {/* 파티 참여 순위 */}
         <div>
           <h2 className="font-semibold mb-3">순위</h2>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <EarningsLeaderboard users={allUsers} currentUserId={user.user_id} />
-            </div>
-            <div className="flex-1">
-              <PartyParticipationRanking
-                ranking={participationRanking}
-                allUsers={allUsers}
-                currentUserId={user.user_id}
-              />
-            </div>
-          </div>
+          <PartyParticipationRanking
+            ranking={participationRanking}
+            allUsers={allUsers}
+            currentUserId={user.user_id}
+          />
         </div>
       </main>
     </div>
