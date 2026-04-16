@@ -44,6 +44,9 @@ export default function AdminPage() {
     try {
       await approveUser(userId, true);
       setPendingUsers((prev) => prev.filter((u) => u.user_id !== userId));
+      setAllUsers((prev) =>
+        prev.map((u) => (u.user_id === userId ? { ...u, is_approved: true } : u))
+      );
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "승인 실패");
     } finally {
@@ -56,6 +59,9 @@ export default function AdminPage() {
     try {
       await approveUser(userId, false);
       setPendingUsers((prev) => prev.filter((u) => u.user_id !== userId));
+      setAllUsers((prev) =>
+        prev.map((u) => (u.user_id === userId ? { ...u, is_approved: false } : u))
+      );
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "거절 실패");
     } finally {

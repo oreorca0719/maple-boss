@@ -39,9 +39,9 @@ export default function SignupPage() {
     try {
       // 회원가입
       await registerUser(username.trim(), password);
-      // 자동 로그인
-      await login(username.trim(), password);
-      router.push("/dashboard");
+      // 승인 대기 알림
+      alert("승인 대기중입니다. 잠시만 기다려주세요.");
+      router.push("/login");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "회원가입 실패");
     } finally {
