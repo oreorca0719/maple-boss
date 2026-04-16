@@ -205,14 +205,14 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* 수익 순위표 + 파티 참여 순위 */}
+        {/* 순위 배너 - 고정 높이 + 스크롤 */}
         <div>
           <h2 className="font-semibold mb-3">순위</h2>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 h-96">
+            <div className="overflow-y-auto">
               <EarningsLeaderboard users={allUsers} currentUserId={user.user_id} />
             </div>
-            <div className="flex-1">
+            <div className="overflow-y-auto">
               <PartyParticipationRanking
                 ranking={participationRanking}
                 allUsers={allUsers}
