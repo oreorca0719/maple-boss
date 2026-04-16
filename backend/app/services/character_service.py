@@ -102,6 +102,9 @@ class CharacterService:
             if boss.is_monthly and boss.boss_name in cleared_monthly:
                 boss.is_cleared = False
 
+        # 0-1. total_earnings 재계산 (is_cleared=False로 변경된 월간 보스 제외)
+        checklist.total_earnings = sum(b.earnings for b in checklist.bosses if b.is_cleared)
+
         # 1. 체크리스트 저장 (덮어쓰기)
         self._db.put_item(checklist.model_dump())
 
