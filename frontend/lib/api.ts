@@ -66,6 +66,22 @@ export function listUsers() {
   return request<User[]>("/api/v1/users");
 }
 
+export function listPendingUsers() {
+  return request<User[]>("/api/v1/users/admin/pending");
+}
+
+export function approveUser(userId: string, isApproved: boolean) {
+  return request<User>(`/api/v1/users/admin/${userId}/approve?is_approved=${isApproved}`, {
+    method: "PATCH",
+  });
+}
+
+export function deleteUser(userId: string) {
+  return request<void>(`/api/v1/users/${userId}`, {
+    method: "DELETE",
+  });
+}
+
 export function getEarningsHistory(userId: string, weeks = 8) {
   return request<EarningsRecord[]>(
     `/api/v1/users/${userId}/earnings-history?weeks=${weeks}`
@@ -156,6 +172,8 @@ export function getPartyParticipationRanking(weeklyKey: string, limit = 10) {
 export interface User {
   user_id: string;
   display_name: string;
+  is_admin: boolean;
+  is_approved: boolean;
   weekly_earnings: number;
   monthly_earnings: number;
   created_at: string;

@@ -78,3 +78,24 @@ class UserService:
             FilterExpression=Attr("sk").eq("METADATA")
         )
         return [User(**item) for item in response.get("Items", [])]
+
+    def list_pending(self) -> list[User]:
+        """가입 승인 대기 중인 사용자 조회"""
+        from boto3.dynamodb.conditions import Attr
+        response = self._db._table.scan(
+            FilterExpression=Attr("sk").eq("METADATA") & Attr("is_approved").eq(False)
+        )
+        return [User(**item) for item in response.get("Items", [])]
+
+    def delete(self, user_id: str) -> None:
+        """사용자 및 관련 데이터 삭제"""
+        # 사용자 메타데이터 삭제
+        self._db.delete_item(pk=f"USER#{user_id}", sk="METADATA")
+
+        # 사용자의 모든 캐릭터, 체크리스트, 파티 등 삭제
+        from boto3.dynamodb.conditions import Key
+        items = self._db._table.query(
+            KeyConditionExpression=Key("pk").eq(f"USER#{user_id}")
+        )
+        for item in items.get("Items", []):
+            self._db.delete_item(pk=item["pk"], sk=item["sk"])

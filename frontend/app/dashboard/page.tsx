@@ -49,8 +49,7 @@ export default function DashboardPage() {
         getPartyParticipationRanking(wk, 20),
       ]);
       setChars(cs.sort((a, b) => {
-        if (a.is_main !== b.is_main) return a.is_main ? -1 : 1;
-        return (b.level ?? 0) - (a.level ?? 0);
+        return (b.combat_power ?? 0) - (a.combat_power ?? 0);
       }));
       setEarnings(hist);
       setAllUsers(all);
@@ -118,6 +117,14 @@ export default function DashboardPage() {
         <h1 className="text-maple-yellow font-bold text-lg">🍁 MapleBoss</h1>
         <nav className="flex items-center gap-4">
           <span className="text-maple-muted text-sm">{user.display_name}</span>
+          {user.is_admin && (
+            <button
+              onClick={() => router.push("/admin")}
+              className="btn-ghost text-sm py-1 px-3 text-maple-yellow"
+            >
+              ⚙ 관리자
+            </button>
+          )}
           <button onClick={logout} className="btn-ghost text-sm py-1 px-3">
             로그아웃
           </button>
