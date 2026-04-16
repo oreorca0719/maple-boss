@@ -46,7 +46,7 @@ export default function DashboardPage() {
         listCharacters(me.user_id),
         getEarningsHistory(me.user_id),
         listUsers(),
-        getPartyParticipationRanking(wk),
+        getPartyParticipationRanking(wk, 20),
       ]);
       setChars(cs.sort((a, b) => {
         if (a.is_main !== b.is_main) return a.is_main ? -1 : 1;
