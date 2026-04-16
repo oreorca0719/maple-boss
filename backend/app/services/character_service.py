@@ -1,11 +1,14 @@
 from datetime import datetime, date as date_type
 from typing import Optional, TYPE_CHECKING
+import logging
 
 from app.models.character import Character, CharacterCreate, CharacterUpdate, BossChecklist
 from app.services.dynamo import DynamoClient
 
 if TYPE_CHECKING:
     from app.services.party_service import PartyService
+
+logger = logging.getLogger(__name__)
 
 
 class CharacterService:
@@ -196,17 +199,23 @@ class CharacterService:
     def get_party_participation_ranking(self, party_service: "PartyService", weekly_key: str, limit: int = 10) -> list[dict]:
         """주간 파티 참여 순위 (user별 모든 캐릭터의 파티 참여 수 합산)"""
         parties = party_service.list_by_week(weekly_key)
+        logger.info(f"[PartyRanking] weekly_key={weekly_key}, found {len(parties)} parties")
         
         user_party_count: dict[str, int] = {}
         for party in parties:
+            logger.debug(f"[PartyRanking] Party: {party.boss_name} ({party.difficulty}) @ {party.scheduled_date}, members: {len(party.members)}")
             for member in party.members:
                 user_id = member.user_id
                 user_party_count[user_id] = user_party_count.get(user_id, 0) + 1
+        
+        logger.info(f"[PartyRanking] user_party_count={user_party_count}")
         
         ranking = sorted(
             [{"user_id": uid, "party_count": count} for uid, count in user_party_count.items()],
             key=lambda x: x["party_count"],
             reverse=True
         )[:limit]
+        
+        logger.info(f"[PartyRanking] ranking={ranking}")
         
         return ranking
