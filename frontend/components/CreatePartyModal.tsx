@@ -19,12 +19,25 @@ interface Props {
 
 const DIFFICULTY_ORDER = ["이지", "노말", "하드", "카오스", "익스트림"];
 
-function currentMaplestoryThursday(): string {
-  const today = new Date();
-  const daysSince = (today.getDay() + 3) % 7;
-  const thu = new Date(today);
-  thu.setDate(today.getDate() - daysSince);
-  return thu.toISOString().split("T")[0];
+function getCurrentWeekKey(): string {
+  const now = new Date();
+  const jan4 = new Date(now.getFullYear(), 0, 4);
+  const weekOne = new Date(jan4);
+  weekOne.setDate(jan4.getDate() - jan4.getDay());
+  const daysDiff = (now.getTime() - weekOne.getTime()) / (24 * 60 * 60 * 1000);
+  const week = Math.floor(daysDiff / 7) + 1;
+  return `${now.getFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+function getThursdayFromWeekKey(weeklyKey: string): string {
+  const year = parseInt(weeklyKey.split("-W")[0]);
+  const week = parseInt(weeklyKey.split("-W")[1]);
+  const jan4 = new Date(year, 0, 4);
+  const weekOne = new Date(jan4);
+  weekOne.setDate(jan4.getDate() - jan4.getDay());
+  const thursday = new Date(weekOne);
+  thursday.setDate(weekOne.getDate() + (week - 1) * 7 + 3);
+  return thursday.toISOString().split("T")[0];
 }
 
 export default function CreatePartyModal({
@@ -180,11 +193,15 @@ export default function CreatePartyModal({
     ];
 
     try {
+      // 현재 주차를 계산하고, 해당 주차의 목요일을 scheduled_date로 사용
+      const weeklyKey = getCurrentWeekKey();
+      const scheduledDate = getThursdayFromWeekKey(weeklyKey);
+      
       await onSubmit(
         {
           boss_name: bossName,
           difficulty,
-          scheduled_date: currentMaplestoryThursday(),
+          scheduled_date: scheduledDate,
           scheduled_time: "00:00",
           members: allMembers,
           memo: memo || undefined,
