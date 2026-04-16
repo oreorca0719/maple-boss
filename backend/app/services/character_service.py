@@ -131,6 +131,17 @@ class CharacterService:
         # 4. 이번 달 합산
         month_total = self._compute_month_total(checklist.user_id, checklist.weekly_key)
 
+        # 5. METADATA 업데이트 (주간/월간 누적 수익)
+        self._db.update_item(
+            pk=f"USER#{checklist.user_id}",
+            sk="METADATA",
+            updates={
+                "weekly_earnings": week_total,
+                "monthly_earnings": month_total,
+                "updated_at": datetime.utcnow().isoformat(),
+            }
+        )
+
         return checklist, week_total, month_total
 
     def _set_earnings_record(self, user_id: str, weekly_key: str, total: int) -> None:
