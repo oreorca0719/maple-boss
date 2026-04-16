@@ -28,6 +28,7 @@ export default function BossChecklistEditor({
   // key: boss_name, value: 선택된 BossEntry
   const [selected, setSelected] = useState<Record<string, BossEntry>>({});
   const [saving, setSaving] = useState(false);
+  const [clearedMonthlyThisMonth, setClearedMonthlyThisMonth] = useState<Set<string>>(new Set());
 
   const { groupedWeekly, groupedMonthly } = useMemo(() => {
     const map: Record<string, BossInfo[]> = {};
@@ -47,12 +48,21 @@ export default function BossChecklistEditor({
   }, [bossList]);
 
   useEffect(() => {
-    if (!initial) return;
+    if (!initial) {
+      setClearedMonthlyThisMonth(new Set());
+      return;
+    }
     const map: Record<string, BossEntry> = {};
+    const clearedMonthly = new Set<string>();
     for (const b of initial.bosses) {
       map[b.boss_name] = b;
+      // 월간 보스이고 클리어된 것을 추적
+      if (b.is_monthly && b.is_cleared) {
+        clearedMonthly.add(b.boss_name);
+      }
     }
     setSelected(map);
+    setClearedMonthlyThisMonth(clearedMonthly);
   }, [initial]);
 
   // bossList에서 월간 보스 판단 (is_monthly 필드)
@@ -302,16 +312,21 @@ export default function BossChecklistEditor({
               {groupedMonthly.map(([bossName, variants]) => {
                 const sel = selected[bossName];
                 const earning = sel ? formatMeso(Math.floor(sel.crystal_price / sel.party_size)) : null;
+                const isMonthlyCleared = clearedMonthlyThisMonth.has(bossName);
                 const diffButtons = variants.map((v) => {
                   const isSelected = sel?.difficulty === v.difficulty;
+                  const isDisabled = isMonthlyCleared && !isSelected;
                   return (
                     <button
                       key={v.id}
-                      onClick={() => selectDifficulty(v)}
+                      onClick={() => !isDisabled && selectDifficulty(v)}
+                      disabled={isDisabled}
                       className={`px-2 py-0.5 rounded text-xs font-medium transition-colors border
                         ${isSelected
                           ? "bg-maple-yellow text-maple-dark border-maple-yellow"
-                          : "border-maple-border text-maple-muted hover:border-maple-yellow hover:text-maple-yellow"
+                          : isDisabled
+                            ? "border-maple-border text-maple-muted opacity-30 cursor-not-allowed"
+                            : "border-maple-border text-maple-muted hover:border-maple-yellow hover:text-maple-yellow"
                         }`}
                     >
                       {v.difficulty}

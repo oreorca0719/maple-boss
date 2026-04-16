@@ -40,8 +40,9 @@ class BossChecklist(BaseModel):
         if len(weekly_bosses) > 12:
             raise ValueError("주간 보스는 최대 12개까지만 선택 가능합니다.")
 
-        # 주간 수익만 계산 (월간 보스 제외)
-        self.total_earnings = sum(b.earnings for b in self.bosses if b.is_cleared and not b.is_monthly)
+        # 주간 보스 + 월간 보스 수익 계산 (is_cleared=True인 것만)
+        # 월간 보스는 save_checklist()에서 중복 제거되므로 1회만 포함됨
+        self.total_earnings = sum(b.earnings for b in self.bosses if b.is_cleared)
 
 
 class CharacterBase(BaseModel):

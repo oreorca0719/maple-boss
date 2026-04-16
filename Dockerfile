@@ -36,7 +36,7 @@ COPY backend/app/ ./app/
 # Next.js standalone 결과물
 COPY --from=frontend-builder /app/.next/standalone ./frontend/
 COPY --from=frontend-builder /app/.next/static     ./frontend/.next/static
-COPY --from=frontend-builder /app/public           ./frontend/public
+COPY --from=frontend-builder /app/public ./frontend/public
 
 # nginx, supervisor 설정
 COPY nginx.conf        /etc/nginx/nginx.conf
