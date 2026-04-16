@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { login } from "@/lib/api";
 
 export default function LoginPage() {
@@ -69,6 +70,15 @@ export default function LoginPage() {
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
+
+          <div className="text-center">
+            <p className="text-maple-muted text-sm">
+              아직 계정이 없으신가요?{" "}
+              <Link href="/signup" className="text-maple-yellow hover:underline">
+                회원가입
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

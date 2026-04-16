@@ -57,6 +57,17 @@ export function getMe() {
   return request<User>("/api/v1/auth/me");
 }
 
+export function registerUser(userId: string, displayName: string, password: string) {
+  return request<User>("/api/v1/users", {
+    method: "POST",
+    body: JSON.stringify({
+      user_id: userId,
+      display_name: displayName,
+      password_hash: password,
+    }),
+  });
+}
+
 // ── Users ─────────────────────────────────────────────────────
 export function getUser(userId: string) {
   return request<User>(`/api/v1/users/${userId}`);
