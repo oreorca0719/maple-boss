@@ -96,6 +96,35 @@ class PartyService:
 
         return parties
 
+    def list_by_week(self, weekly_key: str) -> list[Party]:
+        """주간(ISO 8601)에 해당하는 모든 파티 반환 (목요일~수요일)"""
+        from datetime import date as date_type
+
+        # weekly_key에서 주차 범위 계산 (목요일~수요일)
+        year = int(weekly_key.split("-W")[0])
+        week = int(weekly_key.split("-W")[1])
+        jan4 = date_type(year, 1, 4)
+        monday = date_type.fromordinal(
+            jan4.toordinal() - (jan4.isoweekday() - 1) + (week - 1) * 7
+        )
+        thursday = date_type.fromordinal(monday.toordinal() + 3)
+        wednesday = date_type.fromordinal(monday.toordinal() + 9)
+
+        # 주간 범위의 모든 파티 수집
+        seen: set[str] = set()
+        parties: list[Party] = []
+
+        current = thursday
+        while current <= wednesday:
+            date_str = current.strftime("%Y-%m-%d")
+            for party in self.list_by_date(date_str):
+                if party.party_id not in seen:
+                    seen.add(party.party_id)
+                    parties.append(party)
+            current = date_type.fromordinal(current.toordinal() + 1)
+
+        return parties
+
     # ------------------------------------------------------------------
     # 삭제
     # ------------------------------------------------------------------
