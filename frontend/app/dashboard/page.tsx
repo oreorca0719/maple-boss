@@ -20,7 +20,8 @@ function getCurrentWeekKey(): string {
   weekOne.setDate(jan4.getDate() - jan4.getDay());
   const daysDiff = (now.getTime() - weekOne.getTime()) / (24 * 60 * 60 * 1000);
   const week = Math.floor(daysDiff / 7) + 1;
-  return `${now.getFullYear()}-W${String(week).padStart(2, "0")}`;\n}
+  return `${now.getFullYear()}-W${String(week).padStart(2, "0")}`;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
