@@ -1,0 +1,15 @@
+# 로컬 개발 전용 환경변수 — Docker 빌드에서 제외
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# 백엔드 로컬 전용 환경변수
+backend/.env
+backend/.env.local
+
+# 빌드 캐시 / IDE
+**/.next/cache
+**/__pycache__
+**/*.pyc
+**/.DS_Store

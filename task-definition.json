@@ -1,0 +1,43 @@
+{
+  "family": "weekly-boss-dashboard",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::333347414948:role/ecsTaskExecutionRole-1776227998",
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "333347414948.dkr.ecr.ap-northeast-2.amazonaws.com/weekly-boss-dashboard:latest",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "APP_ENV",
+          "value": "production"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "ap-northeast-2"
+        },
+        {
+          "name": "DYNAMODB_TABLE_NAME",
+          "value": "maple-boss-scheduler"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/weekly-boss-dashboard",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

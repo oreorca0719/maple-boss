@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-maple-dark text-maple-text antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-maple-panel; }
+  ::-webkit-scrollbar-thumb { @apply bg-maple-border rounded-full; }
+}
+
+@layer components {
+  .card {
+    @apply bg-maple-panel border border-maple-border rounded-xl p-4;
+  }
+  .btn-primary {
+    @apply bg-maple-yellow text-maple-dark font-semibold px-4 py-2 rounded-lg
+           hover:bg-maple-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply border border-maple-border text-maple-muted px-4 py-2 rounded-lg
+           hover:border-maple-yellow hover:text-maple-yellow transition-colors;
+  }
+  .input-field {
+    @apply w-full bg-maple-dark border border-maple-border rounded-lg px-3 py-2
+           text-maple-text placeholder-maple-muted focus:outline-none focus:border-maple-yellow
+           transition-colors;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+}
