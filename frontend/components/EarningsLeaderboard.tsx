@@ -83,7 +83,6 @@ export default function EarningsLeaderboard({ users, currentUserId }: Props) {
 
   return (
     <div>
-      <h2 className="font-semibold mb-3">수익 순위</h2>
       <div className="flex flex-col sm:flex-row gap-4">
         <RankTable
           title="🏆 주간 수익 순위"
