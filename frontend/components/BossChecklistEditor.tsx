@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { getClearedMonthlyBosses } from "@/lib/api";
 import type { BossInfo, BossEntry, BossChecklist } from "@/lib/api";
 
 interface Props {
@@ -73,23 +74,41 @@ export default function BossChecklistEditor({
   }, [bossList]);
 
   useEffect(() => {
-    if (!initial) {
-      setInitialWeeklyKey(weeklyKey);
-      setClearedMonthlyThisMonth(new Set());
-      return;
-    }
-    setInitialWeeklyKey(initial.weekly_key);
-    const map: Record<string, BossEntry> = {};
-    const clearedMonthly = new Set<string>();
-    for (const b of initial.bosses) {
-      map[b.boss_name] = b;
-      // 월간 보스이고 클리어된 것을 추적 (현재 주차에서)
-      if (b.is_monthly && b.is_cleared) {
-        clearedMonthly.add(b.boss_name);
+    const loadInitialState = async () => {
+      if (!initial) {
+        setInitialWeeklyKey(weeklyKey);
+        setClearedMonthlyThisMonth(new Set());
+        return;
       }
-    }
-    setSelected(map);
-    setClearedMonthlyThisMonth(clearedMonthly);
+
+      setInitialWeeklyKey(initial.weekly_key);
+      const map: Record<string, BossEntry> = {};
+      for (const b of initial.bosses) {
+        map[b.boss_name] = b;
+      }
+      setSelected(map);
+
+      // Backend에서 현재 달의 모든 주차 월간 보스 클리어 정보 조회
+      try {
+        const response = await getClearedMonthlyBosses(
+          initial.user_id,
+          initial.char_name,
+          weeklyKey
+        );
+        setClearedMonthlyThisMonth(new Set(response.cleared_monthly_bosses));
+      } catch (e) {
+        // Fallback: initial에서만 조회
+        const clearedMonthly = new Set<string>();
+        for (const b of initial.bosses) {
+          if (b.is_monthly && b.is_cleared) {
+            clearedMonthly.add(b.boss_name);
+          }
+        }
+        setClearedMonthlyThisMonth(clearedMonthly);
+      }
+    };
+
+    loadInitialState();
   }, [initial, weeklyKey]);
 
   // bossList에서 월간 보스 판단 (is_monthly 필드)

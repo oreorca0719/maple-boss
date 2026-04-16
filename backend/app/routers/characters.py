@@ -114,3 +114,18 @@ def get_checklist(
     return result
 
 
+@router.get("/{char_name}/cleared-monthly", response_model=dict)
+def get_cleared_monthly_bosses(
+    user_id: str,
+    char_name: str,
+    weekly_key: str,
+    char_svc: CharacterService = Depends(get_character_service),
+):
+    """
+    현재 주차가 속한 달의 모든 주차에서 클리어된 월간 보스 목록 반환.
+    Frontend에서 disabled UI 상태를 정확히 결정하기 위해 사용.
+    """
+    cleared = char_svc._get_monthly_bosses_cleared_this_month(user_id, weekly_key)
+    return {"cleared_monthly_bosses": list(cleared)}
+
+

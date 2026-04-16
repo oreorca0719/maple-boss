@@ -105,6 +105,12 @@ export function saveChecklist(userId: string, charName: string, checklist: BossC
   );
 }
 
+export function getClearedMonthlyBosses(userId: string, charName: string, weeklyKey: string) {
+  return request<{ cleared_monthly_bosses: string[] }>(
+    `/api/v1/users/${userId}/characters/${encodeURIComponent(charName)}/cleared-monthly?weekly_key=${weeklyKey}`
+  );
+}
+
 // ── Bosses ────────────────────────────────────────────────────
 export function listBosses() {
   return request<BossInfo[]>("/api/v1/bosses");
