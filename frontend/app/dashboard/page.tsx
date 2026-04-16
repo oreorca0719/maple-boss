@@ -4,41 +4,56 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   getMe, listCharacters, getEarningsHistory, registerCharacter,
-  deleteCharacter, syncCharacter, listUsers,
-  type User, type Character, type EarningsRecord,
+  deleteCharacter, syncCharacter, listUsers, getPartyParticipationRanking,
+  type User, type Character, type EarningsRecord, type ParticipationRank,
 } from "@/lib/api";
 import { removeToken } from "@/lib/api";
 import CharacterCard from "@/components/CharacterCard";
 import EarningsChart from "@/components/EarningsChart";
 import EarningsLeaderboard from "@/components/EarningsLeaderboard";
+import PartyParticipationRanking from "@/components/PartyParticipationRanking";
+
+function getCurrentWeekKey(): string {
+  const now = new Date();
+  const jan4 = new Date(now.getFullYear(), 0, 4);
+  const weekOne = new Date(jan4);
+  weekOne.setDate(jan4.getDate() - jan4.getDay());
+  const daysDiff = (now.getTime() - weekOne.getTime()) / (24 * 60 * 60 * 1000);
+  const week = Math.floor(daysDiff / 7) + 1;
+  return `${now.getFullYear()}-W${String(week).padStart(2, "0")}`;\n}
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user,       setUser]       = useState<User | null>(null);
-  const [chars,      setChars]      = useState<Character[]>([]);
-  const [earnings,   setEarnings]   = useState<EarningsRecord[]>([]);
-  const [allUsers,   setAllUsers]   = useState<User[]>([]);
-  const [newChar,    setNewChar]    = useState("");
-  const [addLoading, setAddLoading] = useState(false);
-  const [addError,   setAddError]   = useState("");
-  const [syncing,    setSyncing]    = useState<string | null>(null);
+  const [user,                  setUser]                  = useState<User | null>(null);
+  const [chars,                 setChars]                 = useState<Character[]>([]);
+  const [earnings,              setEarnings]              = useState<EarningsRecord[]>([]);
+  const [allUsers,              setAllUsers]              = useState<User[]>([]);
+  const [participationRanking,  setParticipationRanking]  = useState<ParticipationRank[]>([]);
+  const [weeklyKey,             setWeeklyKey]             = useState("");
+  const [newChar,               setNewChar]               = useState("");
+  const [addLoading,            setAddLoading]            = useState(false);
+  const [addError,              setAddError]              = useState("");
+  const [syncing,               setSyncing]               = useState<string | null>(null);
 
   async function load() {
     try {
       const me = await getMe();
       setUser(me);
-      const [cs, hist, all] = await Promise.all([
+      const wk = getCurrentWeekKey();
+      setWeeklyKey(wk);
+      const [cs, hist, all, participation] = await Promise.all([
         listCharacters(me.user_id),
         getEarningsHistory(me.user_id),
         listUsers(),
+        getPartyParticipationRanking(wk),
       ]);
-      // 본캐 맨 앞, 부캐는 레벨 내림차순
       setChars(cs.sort((a, b) => {
         if (a.is_main !== b.is_main) return a.is_main ? -1 : 1;
         return (b.level ?? 0) - (a.level ?? 0);
       }));
       setEarnings(hist);
       setAllUsers(all);
+      setParticipationRanking(participation);
     } catch {
       router.push("/login");
     }
@@ -181,8 +196,22 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* 수익 순위표 */}
-        <EarningsLeaderboard users={allUsers} currentUserId={user.user_id} />
+        {/* 수익 순위표 + 파티 참여 순위 */}
+        <div>
+          <h2 className="font-semibold mb-3">순위</h2>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <EarningsLeaderboard users={allUsers} currentUserId={user.user_id} />
+            </div>
+            <div className="flex-1">
+              <PartyParticipationRanking
+                ranking={participationRanking}
+                allUsers={allUsers}
+                currentUserId={user.user_id}
+              />
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );

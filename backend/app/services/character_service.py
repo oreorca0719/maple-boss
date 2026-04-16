@@ -181,3 +181,21 @@ class CharacterService:
             sk_begins_with=f"BOSS_CHECK#{weekly_key}#",
         )
         return [BossChecklist(**item) for item in items]
+
+    def get_party_participation_ranking(self, party_service: "PartyService", weekly_key: str, limit: int = 10) -> list[dict]:
+        """주간 파티 참여 순위 (user별 모든 캐릭터의 파티 참여 수 합산)"""
+        parties = party_service.list_by_week(weekly_key)
+        
+        user_party_count: dict[str, int] = {}
+        for party in parties:
+            for member in party.members:
+                user_id = member.user_id
+                user_party_count[user_id] = user_party_count.get(user_id, 0) + 1
+        
+        ranking = sorted(
+            [{"user_id": uid, "party_count": count} for uid, count in user_party_count.items()],
+            key=lambda x: x["party_count"],
+            reverse=True
+        )[:limit]
+        
+        return ranking

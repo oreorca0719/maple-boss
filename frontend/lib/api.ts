@@ -133,6 +133,13 @@ export function deleteParty(date: string, sk: string) {
   });
 }
 
+// ── Rankings ──────────────────────────────────────────────────
+export function getPartyParticipationRanking(weeklyKey: string, limit = 10) {
+  return request<ParticipationRank[]>(
+    `/api/v1/rankings/party-participation/${weeklyKey}?limit=${limit}`
+  );
+}
+
 // ── Types ─────────────────────────────────────────────────────
 export interface User {
   user_id: string;
@@ -210,4 +217,9 @@ export interface Party {
   sk?: string;
   gsi1pk?: string;
   gsi1sk?: string;
+}
+
+export interface ParticipationRank {
+  user_id: string;
+  party_count: number;
 }
