@@ -60,7 +60,10 @@ async def sync_character(
     """넥슨 API에서 캐릭터 정보 수동 갱신"""
     api_data = await nexon.fetch_character(char_name)
     if not api_data:
-        raise HTTPException(status_code=502, detail="Failed to fetch from Nexon API")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to fetch '{char_name}' from Nexon API. Please check the character name or try again later."
+        )
     updated = char_svc.sync_from_api(user_id, char_name, api_data)
     if not updated:
         raise HTTPException(status_code=404, detail="Character not found")

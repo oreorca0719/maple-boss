@@ -90,8 +90,9 @@ export default function DashboardPage() {
     try {
       const updated = await syncCharacter(user.user_id, charName);
       setChars((prev) => prev.map((c) => (c.char_name === charName ? updated : c)));
-    } catch {
-      alert("넥슨 API 동기화 실패");
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : "넥슨 API 동기화 실패";
+      alert(errorMsg);
     } finally {
       setSyncing(null);
     }

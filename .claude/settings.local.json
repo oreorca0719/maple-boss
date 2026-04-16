@@ -98,7 +98,9 @@
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
       "Bash(git config:*)",
       "Bash(gh auth:*)",
-      "Bash(git credential-manager-core:*)"
+      "Bash(git credential-manager-core:*)",
+      "mcp__filesystem__read_text_file",
+      "mcp__filesystem__edit_file"
     ]
   }
 }
