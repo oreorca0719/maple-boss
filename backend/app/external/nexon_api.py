@@ -39,6 +39,9 @@ class NexonApiClient:
                         f"{BASE_URL}/id",
                         params={"character_name": char_name},
                     )
+                    if r.status_code == 404:
+                        logger.warning(f"[NexonAPI] '{char_name}' 캐릭터를 찾을 수 없음 (404)")
+                        return None
                     r.raise_for_status()
                     ocid: str = r.json()["ocid"]
 
@@ -75,10 +78,10 @@ class NexonApiClient:
                     )
 
             except httpx.HTTPStatusError as e:
-                logger.warning(f"[NexonAPI] '{char_name}' HTTP 오류: {e.response.status_code}")
+                logger.warning(f"[NexonAPI] '{char_name}' HTTP {e.response.status_code}: {e.response.text}")
                 return None
             except Exception as e:
-                logger.warning(f"[NexonAPI] '{char_name}' 조회 실패: {e}")
+                logger.warning(f"[NexonAPI] '{char_name}' 조회 실패: {type(e).__name__}: {e}")
                 return None
 
     async def fetch_characters_bulk(
