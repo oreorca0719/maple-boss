@@ -26,7 +26,19 @@ export default function PartyParticipationRanking({
     allUsers.map((u) => [u.user_id, u.display_name])
   );
 
+  // 알려진 사용자만 필터링
+  const validRanking = ranking.filter((r) => r.user_id in userMap);
+
   const rankColors = ["text-yellow-400", "text-slate-300", "text-amber-600"];
+
+  if (validRanking.length === 0) {
+    return (
+      <div className="card flex-1">
+        <h3 className="font-semibold mb-3 text-maple-yellow">🎭 파티 참여 순위</h3>
+        <p className="text-maple-muted text-sm">파티 참여 데이터가 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="card flex-1">
@@ -40,8 +52,8 @@ export default function PartyParticipationRanking({
           </tr>
         </thead>
         <tbody>
-          {ranking.map((r, i) => {
-            const displayName = userMap[r.user_id] || "알 수 없음";
+          {validRanking.map((r, i) => {
+            const displayName = userMap[r.user_id];
             const isMe = r.user_id === currentUserId;
             return (
               <tr
