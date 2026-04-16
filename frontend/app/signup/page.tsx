@@ -8,7 +8,6 @@ import { registerUser, login } from "@/lib/api";
 export default function SignupPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
@@ -20,11 +19,7 @@ export default function SignupPage() {
 
     // 검증
     if (!username.trim()) {
-      setError("본캐 닉네임을 입력하세요.");
-      return;
-    }
-    if (!displayName.trim()) {
-      setError("표시 이름을 입력하세요.");
+      setError("닉네임을 입력하세요.");
       return;
     }
     if (!password) {
@@ -43,7 +38,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       // 회원가입
-      await registerUser(username.trim(), displayName.trim(), password);
+      await registerUser(username.trim(), password);
       // 자동 로그인
       await login(username.trim(), password);
       router.push("/dashboard");
@@ -67,24 +62,13 @@ export default function SignupPage() {
           <h2 className="text-maple-text font-semibold mb-4">회원가입</h2>
 
           <div>
-            <label className="block text-sm text-maple-muted mb-1">본캐 닉네임</label>
+            <label className="block text-sm text-maple-muted mb-1">닉네임</label>
             <input
               className="input-field"
               placeholder="로그인할 때 사용할 닉네임"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-maple-muted mb-1">표시 이름</label>
-            <input
-              className="input-field"
-              placeholder="대시보드에 표시될 이름"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
               required
             />
           </div>

@@ -57,12 +57,12 @@ export function getMe() {
   return request<User>("/api/v1/auth/me");
 }
 
-export function registerUser(userId: string, displayName: string, password: string) {
+export function registerUser(userId: string, password: string) {
   return request<User>("/api/v1/users", {
     method: "POST",
     body: JSON.stringify({
       user_id: userId,
-      display_name: displayName,
+      display_name: userId,
       password_hash: password,
     }),
   });
