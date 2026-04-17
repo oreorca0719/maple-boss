@@ -13,6 +13,6 @@ langgraph==0.2.55
 langchain==0.3.13
 langchain-openai==0.2.14
 langchain-community==0.3.13
-langchain-upstage==0.2.4
+langchain-upstage==0.1.12
 pytest==7.4.4
 pytest-asyncio==0.23.2
