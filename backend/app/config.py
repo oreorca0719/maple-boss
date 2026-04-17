@@ -1,16 +1,22 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
+from pathlib import Path
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(Path(__file__).parent.parent / ".env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
     )
 
     # Nexon Open API
     nexon_api_key: str = ""
+
+    # LLM (Upstage)
+    upstage_api_key: str = ""
+    llm_model: str = "solar-pro3"
+    llm_timeout: int = 30
 
     # AWS
     aws_region: str = "ap-northeast-2"

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import users, characters, parties, auth, bosses, rankings
+from app.routers import users, characters, parties, auth, bosses, rankings, ai
 
 
 @asynccontextmanager
@@ -45,6 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(parties.router, prefix=prefix)
     app.include_router(bosses.router, prefix=prefix)
     app.include_router(rankings.router, prefix=prefix)
+    app.include_router(ai.router, prefix=prefix)
 
     @app.get("/health")
     def health_check():

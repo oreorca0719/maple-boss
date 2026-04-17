@@ -107,7 +107,14 @@
       "Bash(PYTHONPATH=. python scripts/set_admin.py 쿄큐렌)",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(netstat -ano)",
-      "Bash(taskkill /PID 1584 /F)"
+      "Bash(taskkill /PID 1584 /F)",
+      "mcp__filesystem__list_directory",
+      "mcp__desktop-commander__kill_process",
+      "mcp__desktop-commander__interact_with_process",
+      "mcp__desktop-commander__list_sessions",
+      "mcp__filesystem__search_files",
+      "mcp__desktop-commander__force_terminate",
+      "mcp__desktop-commander__start_search"
     ]
   }
 }

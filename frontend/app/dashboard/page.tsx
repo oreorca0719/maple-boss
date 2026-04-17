@@ -12,6 +12,7 @@ import CharacterCard from "@/components/CharacterCard";
 import EarningsChart from "@/components/EarningsChart";
 import { RankTable } from "@/components/EarningsLeaderboard";
 import PartyParticipationRanking from "@/components/PartyParticipationRanking";
+import AIChatbot from "@/components/AIChatbot";
 
 function getCurrentWeekKey(): string {
   const now = new Date();
@@ -239,6 +240,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* AI 챗봇 위젯 */}
+      <AIChatbot userId={user.user_id} charName={chars[0]?.char_name} />
     </div>
   );
 }
